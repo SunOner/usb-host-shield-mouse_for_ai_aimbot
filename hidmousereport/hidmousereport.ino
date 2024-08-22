@@ -1,6 +1,7 @@
 #include "Mouse.h"
 #include <hiduniversal.h>
 #include "hidmouserptparser.h"
+#include "Keyboard.h"
 
 USB Usb;
 HIDUniversal Hid(&Usb);
@@ -9,6 +10,7 @@ HIDMouseReportParser Mou(nullptr);
 void setup()
 {
 	Mouse.begin();
+  Keyboard.begin();
 	Serial.begin(115200);
 	Serial.println("Start");
 
@@ -70,12 +72,54 @@ void ExecuteMouseMoveCommand(const String& command)
 
 void onButtonDown(uint16_t buttonId)
 {
-	Mouse.press(buttonId);
+    switch(buttonId)
+    {
+        case MOUSE_LEFT:
+            Mouse.press(MOUSE_LEFT);
+            break;
+        case MOUSE_RIGHT:
+            Mouse.press(MOUSE_RIGHT);
+            break;
+        case MOUSE_MIDDLE:
+            Mouse.press(MOUSE_MIDDLE);
+            break;
+        case MOUSE_PREV:
+            Keyboard.press(KEY_LEFT_ALT);
+            Keyboard.press(KEY_LEFT_ARROW);
+            break;
+        case MOUSE_NEXT: 
+            Keyboard.press(KEY_LEFT_ALT);
+            Keyboard.press(KEY_RIGHT_ARROW);
+            break;
+        default:
+            break;
+    }
 }
 
 void onButtonUp(uint16_t buttonId)
 {
-	Mouse.release(buttonId);
+    switch(buttonId)
+    {
+        case MOUSE_LEFT:
+            Mouse.release(MOUSE_LEFT);
+            break;
+        case MOUSE_RIGHT:
+            Mouse.release(MOUSE_RIGHT);
+            break;
+        case MOUSE_MIDDLE:
+            Mouse.release(MOUSE_MIDDLE);
+            break;
+        case MOUSE_PREV:
+            Keyboard.release(KEY_LEFT_ALT);
+            Keyboard.release(KEY_LEFT_ARROW);
+            break;
+        case MOUSE_NEXT:
+            Keyboard.release(KEY_LEFT_ALT);
+            Keyboard.release(KEY_RIGHT_ARROW);
+            break;
+        default:
+            break;
+    }
 }
 
 void onTiltPress(int8_t tiltValue)
@@ -84,7 +128,12 @@ void onTiltPress(int8_t tiltValue)
 	Serial.println(tiltValue);
 }
 
-void onMouseMove(int8_t xMovement, int8_t yMovement, int8_t scrollValue)
+void onMouseMove(int16_t x, int16_t y, int8_t wheel)
 {
-  Mouse.move(xMovement, yMovement, scrollValue);
+    Mouse.move(x, y, wheel);
+}
+
+void onScroll(int8_t scrollValue)
+{
+    Mouse.move(0, 0, scrollValue);
 }
