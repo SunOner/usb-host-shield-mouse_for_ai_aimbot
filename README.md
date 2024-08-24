@@ -13,7 +13,9 @@
 1.  Connect the USB Host Shield to the Arduino Leonardo.
 2.  Connect the Logitech mouse to the USB Host Shield.
 3.  Upload the USBHostShieldMouse.ino sketch to the Arduino Leonardo.
-4.  Open the Arduino Serial Monitor and select a baud rate of 115200.
-5.  Edit `arduino_baudrate` to 115200 and `arduino_16_bit_mouse` to True in [config.ini](https://github.com/SunOner/sunone_aimbot/blob/main/config.ini).
+4.  Edit `arduino_baudrate` to 115200 and `arduino_16_bit_mouse` to True in [config.ini](https://github.com/SunOner/sunone_aimbot/blob/main/config.ini).
+
+> [!NOTE]
+> The side buttons are emulated using the keyboard library. Reassign these keys in the games.
 
 ## arduino mouse pre-library is taken from [here](https://github.com/arduino-libraries/Mouse)
