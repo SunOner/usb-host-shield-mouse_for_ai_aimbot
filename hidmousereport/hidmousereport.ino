@@ -72,6 +72,7 @@ void ExecuteMouseMoveCommand(const String& command)
 
 void onButtonDown(uint16_t buttonId)
 {
+    Serial.println("BD:" + String(buttonId));
     switch(buttonId)
     {
         case MOUSE_LEFT:
@@ -98,6 +99,7 @@ void onButtonDown(uint16_t buttonId)
 
 void onButtonUp(uint16_t buttonId)
 {
+    Serial.println("BU:" + String(buttonId));
     switch(buttonId)
     {
         case MOUSE_LEFT:
