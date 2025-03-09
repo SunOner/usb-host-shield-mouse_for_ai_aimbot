@@ -7,6 +7,10 @@ USB Usb;
 HIDUniversal Hid(&Usb);
 HIDMouseReportParser Mou(nullptr);
 
+volatile bool buttonEvent = false;
+volatile uint16_t buttonId = 0;
+volatile bool isButtonDown = false;
+
 void setup()
 {
 	Mouse.begin();
@@ -23,16 +27,28 @@ void setup()
 
 	if (!Hid.SetReportParser(0, &Mou))
   {
-		ErrorMessage<uint8_t > (PSTR("SetReportParser"), 1);
+		ErrorMessage<uint8_t> (PSTR("SetReportParser"), 1);
   }
 }
 
 void loop()
 {
-  	Usb.Task();
+    Usb.Task();
 
-    if (Serial.available() > 0)
+    if (buttonEvent)
     {
+        if (Serial.dtr())
+        {
+            char buffer[16];
+            const char* type = isButtonDown ? "BD:" : "BU:";
+            snprintf(buffer, sizeof(buffer), "%s%u", type, buttonId);
+            Serial.println(buffer);
+        }
+        
+        buttonEvent = false;
+    }
+
+    if (Serial.available() > 0) {
         String command = Serial.readStringUntil('\n');
         ParseSerialCommand(command);
     }
@@ -70,9 +86,12 @@ void ExecuteMouseMoveCommand(const String& command)
     Mouse.move(x, y, 0);
 }
 
-void onButtonDown(uint16_t buttonId)
+void onButtonDown(uint16_t buttonId_)
 {
-    Serial.println("BD:" + String(buttonId));
+    buttonEvent = true;
+    buttonId = buttonId_;
+    isButtonDown = true;
+
     switch(buttonId)
     {
         case MOUSE_LEFT:
@@ -97,9 +116,11 @@ void onButtonDown(uint16_t buttonId)
     }
 }
 
-void onButtonUp(uint16_t buttonId)
+void onButtonUp(uint16_t buttonId_)
 {
-    Serial.println("BU:" + String(buttonId));
+    buttonEvent = true;
+    buttonId = buttonId_;
+    isButtonDown = false;
     switch(buttonId)
     {
         case MOUSE_LEFT:
